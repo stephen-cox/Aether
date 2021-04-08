@@ -1,10 +1,24 @@
 {
-    "name": "stephen-cox/aether",
+    "name": "aether/aether",
     "description": "Headless, flat file editor / CMS.",
     "type": "project",
-    "license": "proprietary",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Stephen Cox",
+            "email": "web@stephencox.net"
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "config": {
+        "bin-dir": "bin/",
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
     "require": {
         "php": ">=7.2.5",
         "ext-ctype": "*",
@@ -22,15 +36,15 @@
         "symfony/serializer": "5.2.*",
         "symfony/yaml": "5.2.*"
     },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": {
-            "*": "dist"
-        },
-        "sort-packages": true
+    "require-dev": {
+        "escapestudios/symfony2-coding-standard": "3.x-dev",
+        "symfony/browser-kit": "5.2.*",
+        "symfony/maker-bundle": "^1.30",
+        "symfony/phpunit-bridge": "^5.2"
     },
     "autoload": {
         "psr-4": {
+            "Aether\\": "plugins/",
             "App\\": "src/"
         }
     },
@@ -64,9 +78,5 @@
             "allow-contrib": false,
             "require": "5.2.*"
         }
-    },
-    "require-dev": {
-        "escapestudios/symfony2-coding-standard": "3.x-dev",
-        "symfony/maker-bundle": "^1.30"
     }
 }
