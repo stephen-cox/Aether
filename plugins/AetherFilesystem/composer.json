@@ -1,0 +1,21 @@
+{
+    "name": "aether/filesystem",
+    "description": "Abstract filesystem classes and REST API.",
+    "type": "aether-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Stephen Cox",
+            "email": "web@stephencox.net"
+        }
+    ],
+    "require": {
+        "league/flysystem": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aether\\AetherFilesystem\\": "src/",
+            "Aether\\AetherFilesystem\\Tests\\": "tests/"
+        }
+    }
+}
