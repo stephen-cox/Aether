@@ -9,7 +9,7 @@ class ApiTests extends WebTestCase
     public function testRoot()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/v1/');
+        $client->request('GET', '/api/v1');
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $content = json_decode($response->getContent());

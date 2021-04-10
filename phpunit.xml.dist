@@ -16,14 +16,18 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="aether">
+            <directory>./tests</directory>
+        </testsuite>
+        <testsuite name="plugins">
+            <directory>./plugins/*/tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+        <whitelist>
+            <directory suffix=".php">./tests</directory>
+            <directory suffix=".php">./plugins/*/tests</directory>
         </whitelist>
     </filter>
 

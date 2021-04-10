@@ -11,3 +11,4 @@ api_controller:
     type: annotation
     prefix: /api/{version}
     name_prefix: 'api_'
+    trailing_slash_on_root: false

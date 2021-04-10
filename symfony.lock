@@ -32,6 +32,12 @@
             "config/packages/fos_rest.yaml"
         ]
     },
+    "league/flysystem": {
+        "version": "2.0.4"
+    },
+    "league/mime-type-detection": {
+        "version": "1.7.0"
+    },
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
@@ -257,6 +263,9 @@
     },
     "webmozart/assert": {
         "version": "1.10.0"
+    },
+    "wikimedia/composer-merge-plugin": {
+        "version": "v2.0.1"
     },
     "willdurand/jsonp-callback-validator": {
         "version": "v1.1.0"

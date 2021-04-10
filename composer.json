@@ -34,7 +34,8 @@
         "symfony/property-access": "5.2.*",
         "symfony/property-info": "5.2.*",
         "symfony/serializer": "5.2.*",
-        "symfony/yaml": "5.2.*"
+        "symfony/yaml": "5.2.*",
+        "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
         "escapestudios/symfony2-coding-standard": "3.x-dev",
@@ -77,6 +78,18 @@
         "symfony": {
             "allow-contrib": false,
             "require": "5.2.*"
+        },
+        "merge-plugin": {
+            "include": [
+                "plugins/*/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "ignore-duplicates": false,
+            "merge-dev": true,
+            "merge-extra": false,
+            "merge-extra-deep": false,
+            "merge-scripts": false
         }
     }
 }

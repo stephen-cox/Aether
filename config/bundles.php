@@ -5,5 +5,5 @@ return [
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     FOS\RestBundle\FOSRestBundle::class => ['all' => true],
-    //Aether\AetherFilesystem::class => ['all' => true],
+    Aether\AetherFilesystem\AetherFilesystem::class => ['all' => true],
 ];
