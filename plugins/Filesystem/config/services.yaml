@@ -1,0 +1,5 @@
+services:
+
+    Aether\Filesystem\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']

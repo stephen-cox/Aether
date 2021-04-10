@@ -9,7 +9,7 @@ class ApiTest extends WebTestCase
     public function testFilesystem()
     {
         $client = static::createClient();
-        $client->request('GET', '/fs');
+        $client->request('GET', '/api/v1/fs', [], [], ['CONTENT_TYPE' => 'application/json']);
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $content = json_decode($response->getContent());

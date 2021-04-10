@@ -2,28 +2,25 @@
 
 namespace Aether\Filesystem\Controller\Api;
 
-use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Junker\JsendResponse\JSendSuccessResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Root API controller class.
  */
-class ApiController extends AbstractFOSRestController
+class ApiController
 {
     /**
-     * @Route("/fs", name="root")
+     * @Route("/", name="root")
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $response = [
-            'status' => 'success',
-            'data' => [
-                'message' => 'Hello',
-                'api_version' => $request->attributes->get('version'),
-            ]
+        $data = [
+            'message' => 'Hello',
+            'api_version' => $request->attributes->get('version'),
         ];
-        $view = $this->view($response, 200);
-        return $this->handleView($view);
+        return new JSendSuccessResponse($data);
     }
 }

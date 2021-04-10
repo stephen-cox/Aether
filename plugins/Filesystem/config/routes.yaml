@@ -1,0 +1,6 @@
+filesystem_api_controller:
+    resource: ../src/Controller/Api/
+    type: annotation
+    prefix: /api/{version}/fs
+    name_prefix: 'fs_api_'
+    trailing_slash_on_root: false

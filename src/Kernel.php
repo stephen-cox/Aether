@@ -22,6 +22,15 @@ class Kernel extends BaseKernel
         } elseif (is_file($path = \dirname(__DIR__).'/config/services.php')) {
             (require $path)($container->withPath($path), $this);
         }
+
+        // Import services from plugins.
+        $plugins = scandir(\dirname(__DIR__).'/plugins');
+        foreach ($plugins as $plugin) {
+          if (!in_array($plugin, ['.', '..']) and is_file(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml')) {
+            print_r(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml');
+              $container->import(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml');
+          }
+        }
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void
@@ -33,6 +42,14 @@ class Kernel extends BaseKernel
             $routes->import('../config/routes.yaml');
         } elseif (is_file($path = \dirname(__DIR__).'/config/routes.php')) {
             (require $path)($routes->withPath($path), $this);
+        }
+
+        // Import routes from plugins.
+        $plugins = scandir(\dirname(__DIR__).'/plugins');
+        foreach ($plugins as $plugin) {
+            if (!in_array($plugin, ['.', '..']) and is_file(\dirname(__DIR__).'/plugins/'.$plugin.'/config/routes.yaml')) {
+                $routes->import(\dirname(__DIR__).'/plugins/'.$plugin.'/config/routes.yaml');
+            }
         }
     }
 }
