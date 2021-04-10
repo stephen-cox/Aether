@@ -14,8 +14,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Aether\\AetherFilesystem\\": "src/",
-            "Aether\\AetherFilesystem\\Tests\\": "tests/"
+            "Aether\\Filesystem\\": "src/",
+            "Aether\\Filesystem\\Tests\\": "tests/"
         }
     }
 }

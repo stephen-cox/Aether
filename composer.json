@@ -46,8 +46,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Aether\\": "plugins/",
-            "App\\": "src/"
+            "App\\": "src/",
+            "Aether\\": "plugins/"
         }
     },
     "autoload-dev": {

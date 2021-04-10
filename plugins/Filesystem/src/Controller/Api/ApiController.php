@@ -1,6 +1,6 @@
 <?php
 
-namespace Aether\AetherFilesystem\Controller\Api;
+namespace Aether\Filesystem\Controller\Api;
 
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Aether\AetherFilesystem\Tests;
+namespace Aether\Filesystem\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ApiTests extends WebTestCase
+class ApiTest extends WebTestCase
 {
     public function testFilesystem()
     {
