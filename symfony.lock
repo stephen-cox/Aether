@@ -41,6 +41,9 @@
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
+    "php": {
+        "version": "7.4"
+    },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
     },
@@ -49,6 +52,9 @@
     },
     "phpdocumentor/type-resolver": {
         "version": "1.4.0"
+    },
+    "phpunit/php-token-stream": {
+        "version": "4.0.4"
     },
     "psr/cache": {
         "version": "1.0.1"

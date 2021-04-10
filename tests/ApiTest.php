@@ -4,7 +4,7 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ApiTests extends WebTestCase
+class ApiTest extends WebTestCase
 {
     public function testRoot()
     {
