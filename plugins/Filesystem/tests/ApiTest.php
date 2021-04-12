@@ -11,17 +11,17 @@ class ApiTest extends WebTestCase
     {
         if ($_ENV['AETHER_FS_ROOT']) {
             $rootFs = $_ENV['AETHER_FS_ROOT'];
-            if (file_exists($rootFs . '/copy.txt')) {
-                unlink($rootFs . '/copy.txt');
+            if (file_exists($rootFs.'/copy.txt')) {
+                unlink($rootFs.'/copy.txt');
             }
-            if (file_exists($rootFs . '/test.txt')) {
-                unlink($rootFs . '/test.txt');
+            if (file_exists($rootFs.'/test.txt')) {
+                unlink($rootFs.'/test.txt');
             }
-            if (file_exists($rootFs . '/test/test.txt')) {
-                unlink($rootFs . '/test/test.txt');
+            if (file_exists($rootFs.'/test/test.txt')) {
+                unlink($rootFs.'/test/test.txt');
             }
-            if (file_exists($rootFs . '/test')) {
-                rmdir($rootFs . '/test');
+            if (file_exists($rootFs.'/test')) {
+                rmdir($rootFs.'/test');
             }
         }
     }
@@ -195,7 +195,11 @@ class ApiTest extends WebTestCase
         $content = json_decode($response->getContent());
         $this->assertEquals('success', $content->status);
         $this->assertCount(2, $content->data->listing);
-        $this->assertEquals(basename($directory), $content->data->listing[0]->path);
+        foreach ($content->data->listing as $item) {
+            if ($item->type == 'dir') {
+                $this->assertEquals(basename($directory), $item->path);
+            }
+        }
 
         // Check file move.
         $moveTo = '/test/test.txt';
@@ -224,7 +228,7 @@ class ApiTest extends WebTestCase
         $content = json_decode($response->getContent());
         $this->assertEquals('success', $content->status);
         $this->assertCount(1, $content->data->listing);
-        $this->assertEquals($moveTo,  '/'.$content->data->listing[0]->path);
+        $this->assertEquals($moveTo, '/'.$content->data->listing[0]->path);
         $client->request(
             'GET',
             '/api/v1/fs/'.base64_encode('/').'/dir',
