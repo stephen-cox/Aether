@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the Aether application.
+ *
+ * (c) Stephen Cox <web@stephencox.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace App;
 
@@ -7,10 +15,16 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
+/**
+ * Symfony kernel.
+ */
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function configureContainer(ContainerConfigurator $container): void
     {
         $container->import('../config/{packages}/*.yaml');
@@ -32,6 +46,9 @@ class Kernel extends BaseKernel
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $routes->import('../config/{routes}/'.$this->environment.'/*.yaml');

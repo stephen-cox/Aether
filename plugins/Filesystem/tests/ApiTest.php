@@ -1,12 +1,26 @@
 <?php
+/**
+ * This file is part of the Aether application.
+ *
+ * (c) Stephen Cox <web@stephencox.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Aether\Filesystem\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Test filesystem API.
+ */
 class ApiTest extends WebTestCase
 {
 
+    /**
+     * Setup for filesystem tests.
+     */
     protected function setUp(): void
     {
         if ($_ENV['AETHER_FS_ROOT']) {
@@ -26,6 +40,9 @@ class ApiTest extends WebTestCase
         }
     }
 
+    /**
+     * Test API status response.
+     */
     public function testFilesystemStatus()
     {
         $client = static::createClient();
@@ -49,9 +66,11 @@ class ApiTest extends WebTestCase
         $this->assertEquals('v1', $content->data->api_version);
     }
 
+    /**
+     * Test main filesystem API functionality.
+     */
     public function testFilesystemFunctionality()
     {
-
         $client = static::createClient();
 
         // Check directory listing.
@@ -196,7 +215,7 @@ class ApiTest extends WebTestCase
         $this->assertEquals('success', $content->status);
         $this->assertCount(2, $content->data->listing);
         foreach ($content->data->listing as $item) {
-            if ($item->type == 'dir') {
+            if ($item->type === 'dir') {
                 $this->assertEquals(basename($directory), $item->path);
             }
         }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the Aether application.
+ *
+ * (c) Stephen Cox <web@stephencox.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Aether\Filesystem\Controller\Api;
 
@@ -19,14 +27,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 /**
  * Root API controller class.
  */
 class ApiController
 {
+    /**
+     * Flysystem filesystem.
+     *
+     * @var \League\Flysystem\Filesystem
+     */
     private $filesystem;
 
+    /**
+     * Initialise Filesystem API controller.
+     *
+     * @param \League\Flysystem\Filesystem $filesystem
+     */
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem->getFilesystem();
@@ -34,6 +51,11 @@ class ApiController
 
     /**
      * @Route("/", name="status", methods={"GET"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function index(Request $request): Response
     {
@@ -42,11 +64,21 @@ class ApiController
             'message' => 'Hello',
             'api_version' => $request->attributes->get('version'),
         ];
+
         return new JSendSuccessResponse($data);
     }
 
     /**
      * @Route("/{path}/{action}", name="get", methods={"GET"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $path
+     *   Base64 encoded path.
+     * @param string                                    $action
+     *   Type of action to perform; either file or dir.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function get(Request $request, $path, $action): Response
     {
@@ -54,26 +86,25 @@ class ApiController
         $action = $action;
 
         // Get directory listing.
-        if ($action === 'dir') {
+        if ('dir' === $action) {
             try {
-                $recursive = $request->query->get('recursive', FALSE);
+                $recursive = $request->query->get('recursive', false);
                 $listing = $this->filesystem->listContents($path, $recursive);
                 $data = [
                     'action' => $action,
                     'listing' => $listing->toArray(),
                     'path' => $path,
                 ];
+
                 return new JSendSuccessResponse($data);
-            }
-            catch (FilesystemException $exception) {
+            } catch (FilesystemException $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
 
         // Get file contents.
-        elseif ($action == 'file') {
+        if ('file' === $action) {
             try {
-
                 // File doesn't exists.
                 if (!$this->filesystem->fileExists($path)) {
                     $data = [
@@ -81,6 +112,7 @@ class ApiController
                         'path' => $path,
                         'message' => 'File not found',
                     ];
+
                     return new JSendFailResponse($data, 404);
                 }
 
@@ -92,13 +124,12 @@ class ApiController
                         'content' => $file,
                         'path' => $path,
                     ];
+
                     return new JSendSuccessResponse($data);
-                }
-                catch (FilesystemException | UnableToReadFile $exception) {
+                } catch (FilesystemException | UnableToReadFile $exception) {
                     return new JSendErrorResponse($exception->getMessage());
                 }
-            }
-            catch (FilesystemException | UnableToRetrieveMetadata $exception) {
+            } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
@@ -110,11 +141,21 @@ class ApiController
             'message' => 'Action must be define.',
             'path' => $path,
         ];
+
         return new JSendFailResponse($data, 400);
     }
 
     /**
      * @Route("/{path}/{action}", name="put", methods={"PUT"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $path
+     *   Base64 encoded path.
+     * @param string                                    $action
+     *   Type of action to perform; either file or dir.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function put(Request $request, $path, $action): Response
     {
@@ -122,24 +163,22 @@ class ApiController
         $content = $request->request->get('content', '');
 
         // Create directory.
-        if ($action == 'dir') {
+        if ('dir' === $action) {
             try {
                 $this->filesystem->createDirectory($path);
                 $data = [
                     'path' => $path,
                 ];
+
                 return new JSendSuccessResponse($data, 201);
-            }
-            catch (FilesystemException | UnableToCreateDirectory $exception) {
+            } catch (FilesystemException | UnableToCreateDirectory $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
-
         }
 
         // Create file.
-        elseif ($action == 'file') {
+        if ('file' === $action) {
             try {
-
                 // File already exists.
                 if ($this->filesystem->fileExists($path)) {
                     $data = [
@@ -147,6 +186,7 @@ class ApiController
                         'path' => $path,
                         'message' => 'File already exists. Use PATCH to update file',
                     ];
+
                     return new JSendFailResponse($data, 400);
                 }
 
@@ -156,14 +196,12 @@ class ApiController
                     $data = [
                         'path' => $path,
                     ];
-                    return new JSendSuccessResponse($data, 201);
 
-                }
-                catch (FilesystemException | UnableToWriteFile $exception) {
+                    return new JSendSuccessResponse($data, 201);
+                } catch (FilesystemException | UnableToWriteFile $exception) {
                     return new JSendErrorResponse($exception->getMessage());
                 }
-            }
-            catch (FilesystemException | UnableToRetrieveMetadata $exception) {
+            } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
@@ -175,17 +213,27 @@ class ApiController
             'message' => 'Action must be define.',
             'path' => $path,
         ];
+
         return new JSendFailResponse($data, 400);
     }
 
     /**
      * @Route("/{source}/{action}", name="post", methods={"POST"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $source
+     *   Base64 encoded source file.
+     * @param string                                    $action
+     *   Type of action to perform; either copy or move.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function post(Request $request, $source, $action): Response
     {
         $source = base64_decode($source);
         $destination = base64_decode($request->request->get('destination'));
-        $replace = (bool) $request->request->get('replace', FALSE);
+        $replace = (bool) $request->request->get('replace', false);
 
         // Check destination.
         if (!$destination) {
@@ -194,6 +242,7 @@ class ApiController
                 'destination' => $destination,
                 'message' => 'A destination for the file must be set.',
             ];
+
             return new JSendFailResponse($data, 400);
         }
         if (!$replace and $this->filesystem->fileExists($destination)) {
@@ -202,6 +251,7 @@ class ApiController
                 'destination' => $destination,
                 'message' => 'Destination file already exists',
             ];
+
             return new JSendFailResponse($data, 400);
         }
 
@@ -212,35 +262,36 @@ class ApiController
                 'destination' => $destination,
                 'message' => 'Source file not found.',
             ];
+
             return new JSendFailResponse($data, 400);
         }
 
         // Copy.
-        if ($action == 'copy') {
+        if ('copy' === $action) {
             try {
                 $this->filesystem->copy($source, $destination);
                 $data = [
                     'source' => $source,
                     'destination' => $destination,
                 ];
+
                 return new JSendSuccessResponse($data, 200);
-            }
-            catch (FilesystemException | UnableToCopyFile $exception) {
+            } catch (FilesystemException | UnableToCopyFile $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
 
         // Move.
-        elseif ($action == 'move') {
+        if ('move' === $action) {
             try {
                 $this->filesystem->move($source, $destination);
                 $data = [
                     'source' => $source,
                     'destination' => $destination,
                 ];
+
                 return new JSendSuccessResponse($data, 200);
-            }
-            catch (FilesystemException | UnableToMoveFile $exception) {
+            } catch (FilesystemException | UnableToMoveFile $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
@@ -253,11 +304,21 @@ class ApiController
             'source' => $source,
             'destination' => $destination,
         ];
+
         return new JSendFailResponse($data, 400);
     }
 
     /**
      * @Route("/{path}/{action}", name="patch", methods={"PATCH"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $path
+     *   Base64 encoded path.
+     * @param string                                    $action
+     *   Type of action to perform; only file currently implemented.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function patch(Request $request, $path, $action): Response
     {
@@ -265,9 +326,8 @@ class ApiController
         $content = $request->request->get('content', '');
 
         // Update file.
-        if ($action == 'file') {
+        if ('file' === $action) {
             try {
-
                 // File doesn't exist.
                 if (!$this->filesystem->fileExists($path)) {
                     $data = [
@@ -275,6 +335,7 @@ class ApiController
                         'path' => $path,
                         'message' => 'File not found. Use PUT to create a file',
                     ];
+
                     return new JSendFailResponse($data, 404);
                 }
 
@@ -284,14 +345,12 @@ class ApiController
                     $data = [
                         'path' => $path,
                     ];
-                    return new JSendSuccessResponse($data, 201);
 
-                }
-                catch (FilesystemException | UnableToWriteFile $exception) {
+                    return new JSendSuccessResponse($data, 201);
+                } catch (FilesystemException | UnableToWriteFile $exception) {
                     return new JSendErrorResponse($exception->getMessage());
                 }
-            }
-            catch (FilesystemException | UnableToRetrieveMetadata $exception) {
+            } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
@@ -303,41 +362,50 @@ class ApiController
             'message' => 'Action must be define.',
             'path' => $path,
         ];
+
         return new JSendFailResponse($data, 400);
     }
 
     /**
      * @Route("/{path}/{action}", name="delete", methods={"DELETE"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $path
+     *   Base64 encoded path.
+     * @param string                                    $action
+     *   Type of action to perform; either file or dir.
+     *
+     * @return Junker\JsendResponse\JSendResponse
      */
     public function delete(Request $request, $path, $action): Response
     {
         $path = base64_decode($path);
 
         // Delete directory.
-        if ($action == 'dir') {
+        if ('dir' === $action) {
             try {
                 $this->filesystem->deleteDirectory($path);
                 $data = [
                     'path' => $path,
                 ];
-                return new JSendSuccessResponse($data, 200);
 
-            }
-            catch (FilesystemException | UnableToDeleteDirectory $exception) {
+                return new JSendSuccessResponse($data, 200);
+            } catch (FilesystemException | UnableToDeleteDirectory $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
 
         // Delete file.
-        if ($action == 'file') {
+        if ('file' === $action) {
             try {
-
                 // File doesn't exist.
                 if (!$this->filesystem->fileExists($path)) {
                     $data = [
                         'path' => $path,
                         'message' => 'File not found.',
                     ];
+
                     return new JSendFailResponse($data, 404);
                 }
 
@@ -347,14 +415,12 @@ class ApiController
                     $data = [
                         'path' => $path,
                     ];
-                    return new JSendSuccessResponse($data, 200);
 
-                }
-                catch (FilesystemException | UnableToDeleteFile $exception) {
+                    return new JSendSuccessResponse($data, 200);
+                } catch (FilesystemException | UnableToDeleteFile $exception) {
                     return new JSendErrorResponse($exception->getMessage());
                 }
-            }
-            catch (FilesystemException | UnableToRetrieveMetadata $exception) {
+            } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
         }
@@ -366,6 +432,7 @@ class ApiController
             'message' => 'Action must be define.',
             'path' => $path,
         ];
+
         return new JSendFailResponse($data, 400);
     }
 }

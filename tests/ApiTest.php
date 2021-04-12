@@ -1,11 +1,25 @@
 <?php
+/**
+ * This file is part of the Aether application.
+ *
+ * (c) Stephen Cox <web@stephencox.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Tests for the core API.
+ */
 class ApiTest extends WebTestCase
 {
+    /**
+     * Test API root path.
+     */
     public function testRoot()
     {
         $client = static::createClient();
