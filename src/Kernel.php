@@ -26,10 +26,9 @@ class Kernel extends BaseKernel
         // Import services from plugins.
         $plugins = scandir(\dirname(__DIR__).'/plugins');
         foreach ($plugins as $plugin) {
-          if (!in_array($plugin, ['.', '..']) and is_file(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml')) {
-            print_r(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml');
-              $container->import(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml');
-          }
+            if (!in_array($plugin, ['.', '..']) and is_file(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml')) {
+                $container->import(\dirname(__DIR__).'/plugins/'.$plugin.'/config/services.yaml');
+            }
         }
     }
 

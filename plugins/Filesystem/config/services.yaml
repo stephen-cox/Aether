@@ -1,5 +1,13 @@
 services:
 
-    Aether\Filesystem\Controller\:
-        resource: '../src/Controller/'
+    Aether\Filesystem\Controller\Api\ApiController:
+        arguments:
+            $filesystem: '@Aether\Filesystem\Service\Filesystem'
         tags: ['controller.service_arguments']
+
+    Aether\Filesystem\Service\:
+        resource: '../src/Service'
+
+    Aether\Filesystem\Service\Filesystem:
+        arguments:
+            $rootPath: '%env(resolve:AETHER_FS_ROOT)%'
