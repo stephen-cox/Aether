@@ -5,15 +5,11 @@ root = true
 [*]
 charset = utf-8
 end_of_line = LF
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-[*.{php,html,twig,yaml,yml}]
-indent_style = space
 indent_size = 4
-
-[*.md]
+indent_style = space
+insert_final_newline = true
 max_line_length = 80
+trim_trailing_whitespace = true
 
 [COMMIT_EDITMSG]
 max_line_length = 0

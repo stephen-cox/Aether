@@ -8,11 +8,40 @@
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 
-// // start the Stimulus application
-// import './bootstrap';
-
 import Vue from 'vue';
-const app = new Vue({
+
+/**
+ * Import all Vue components loaded using require.context.
+ */
+function importAll(requireComponents)
+{
+    requireComponents.keys().forEach((fileName) => {
+        // Get the component config
+        const componentConfig = requireComponents(fileName)
+        // Get the PascalCase version of the component name
+        const componentName = fileName
+            // Extract filename from path
+            .replace(/^.*(\\|\/|\:)/, '')
+            // Remove the file extension from the end
+            .replace(/\.\w+$/, '')
+            // Split up kebabs
+            .split('-')
+            // Upper case
+            .map((kebab) => kebab.charAt(0).toUpperCase() + kebab.slice(1))
+            // Concatenated
+            .join('');
+        // Globally register the component
+        Vue.component(componentName, componentConfig.default || componentConfig);
+    });
+}
+
+// App components.
+importAll(require.context('./components', false, /.*\.(vue)$/));
+// Plugin components.
+importAll(require.context('../plugins', true, /.*\/assets\/components\/.*\.vue$/));
+
+
+new Vue({
     el: '#app',
-    template: '<h1>Hello Vue! Is this cooler?</h1>',
+    template: '<about/>',
 });
