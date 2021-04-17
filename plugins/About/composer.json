@@ -1,0 +1,19 @@
+{
+    "name": "aether/about",
+    "description": "About Aether plugin.",
+    "type": "aether-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Stephen Cox",
+            "email": "web@stephencox.net"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Aether\\About\\": "src/",
+            "Aether\\About\\Tests\\": "tests/"
+        }
+    }
+}
