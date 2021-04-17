@@ -159,7 +159,7 @@ class ApiTest extends WebTestCase
         $content = json_decode($response->getContent());
         $this->assertEquals('success', $content->status);
         $this->assertEquals($filename, $content->data->path);
-        $this->assertEquals($data, $content->data->content);
+        $this->assertEquals(base64_encode($data), $content->data->content);
 
         // Check file updating.
         $update = 'Updated file';
@@ -212,6 +212,7 @@ class ApiTest extends WebTestCase
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $content = json_decode($response->getContent());
+        print_r($content);
         $this->assertEquals('success', $content->status);
         $this->assertCount(2, $content->data->listing);
         foreach ($content->data->listing as $item) {

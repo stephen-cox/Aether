@@ -1,0 +1,28 @@
+{
+  "name": "aether",
+  "version": "0.0.1",
+  "description": "Aether is a decoupled editor for static files. It consists of a front-end for editing files and a back-end that does the work of passing files to the front-end and saving files passed back.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "apidoc": "apidoc -i src/ -i plugins/ -o public/doc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stephen-cox/aether.git"
+  },
+  "author": "Stephen Cox <web@stephencox.net>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/stephen-cox/aether/issues"
+  },
+  "homepage": "https://github.com/stephen-cox/aether#readme",
+  "devDependencies": {
+    "apidoc": "^0.27.1"
+  },
+  "apidoc": {
+    "title": "Aether API"
+  }
+}

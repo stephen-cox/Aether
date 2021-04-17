@@ -50,7 +50,29 @@ class ApiController
     }
 
     /**
+     * Get filesystem API status.
+     *
      * @Route("/", name="status", methods={"GET"})
+     *
+     * @api {get} /api/v1/fs Get API status
+     * @apiName GetStatus
+     * @apiVersion 1.0.0
+     * @apiGroup Filesystem
+     *
+     * @apiSuccess {String} status Request status.
+     * @apiSuccess {Object[]} data Data object.
+     * @apiSuccess {String} data.message Message from API.
+     * @apiSuccess {String} data.api_version API version requested.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "data": [
+     *         "message": "Hello",
+     *         "api_version": "v1",
+     *       ]
+     *     }
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *   Symfony Request object.
@@ -69,7 +91,120 @@ class ApiController
     }
 
     /**
-     * @Route("/{path}/{action}", name="get", methods={"GET"})
+     * Get directory listing.
+     *
+     * @Route("/{path}/dir", name="get_dir", methods={"GET"})
+     *
+     * @apiName GetDirectoryListing
+     * @apiVersion 1.0.0
+     * @apiGroup Filesystem
+     *
+     * @apiParam (Path Parameters) {String} path Base64 encoded path of directory.
+     * @apiParam (Query Parameters) {Boolean} recursive List subdirectories and files.
+     *
+     * @apiSuccess {String} status Request status.
+     * @apiSuccess {Object[]} data Data object.
+     * @apiSuccess {Object[]} data.listing File and directory listing.
+     * @apiSuccess {Object[]} data.listing.item Directory listing item.
+     * @apiSuccess {String} data.listing.item.type Listing type; either 'dir' or 'file'.
+     * @apiSuccess {String} data.listing.item.path Path to listing item.
+     * @apiSuccess {String} data.path Path of listing.
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "data": [
+     *         "listing": [
+     *           {
+     *             "type": "file",
+     *             "path": "test.txt",
+     *           },
+     *           {
+     *             "type": "dir",
+     *             "path": "test/test.txt",
+     *           },
+     *         ],
+     *         "path": "/",
+     *       ]
+     *     }
+     *
+     * @apiError (Error 500) InternalServerError There was an error in the filesystem.
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "status": "error",
+     *       "message": "Unable to read filesystem."
+     *     }
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   Symfony Request object.
+     * @param string                                    $path
+     *   Base64 encoded path.
+     *
+     * @return Junker\JsendResponse\JSendResponse
+     */
+    public function getDir(Request $request, $path): Response
+    {
+        $path = base64_decode($path);
+
+        try {
+            $recursive = $request->query->get('recursive', false);
+            $listing = $this->filesystem->listContents($path, $recursive);
+            $data = [
+                'listing' => $listing->toArray(),
+                'path' => $path,
+            ];
+            return new JSendSuccessResponse($data);
+        } catch (FilesystemException $exception) {
+            return new JSendErrorResponse($exception->getMessage());
+        }
+    }
+
+    /**
+     * Get file.
+     *
+     * @Route("/{path}/file", name="get_file", methods={"GET"})
+     *
+     * @api {get} /api/v1/fs/:path/file Get file
+     * @apiName GetFile
+     * @apiVersion 1.0.0
+     * @apiGroup Filesystem
+     *
+     * @apiParam (Path Parameters) {String} path Base64 encoded path of directory.
+     *
+     * @apiSuccess {String} status Request status.
+     * @apiSuccess {Object[]} data Data object.
+     * @apiSuccess {String} data.content Base64 encoded file contents.
+     * @apiSuccess {String} data.path Path of fetched file.
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "data": [
+     *         "content": "RmlsZSBjb250ZW50cyB0ZXN0Lgo=",
+     *         "path": "/test.txt",
+     *       ]
+     *     }
+     *
+     * @apiError (Error 404) FileNotFound Requested file wasn't found.
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 File Not Found
+     *     {
+     *       "status": "fail",
+     *       "data": [
+     *         "content": "",
+     *         "path": "/test.txt",
+     *         "message": "File not found",
+     *       ]
+     *     }
+     *
+     * @apiError (Error 500) InternalServerError There was an error in the filesystem.
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "status": "error",
+     *       "message": "Unable to read filesystem."
+     *     }
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *   Symfony Request object.
@@ -80,69 +215,37 @@ class ApiController
      *
      * @return Junker\JsendResponse\JSendResponse
      */
-    public function get(Request $request, $path, $action): Response
+    public function getFile(Request $request, $path): Response
     {
         $path = base64_decode($path);
-        $action = $action;
 
-        // Get directory listing.
-        if ('dir' === $action) {
-            try {
-                $recursive = $request->query->get('recursive', false);
-                $listing = $this->filesystem->listContents($path, $recursive);
+        try {
+            // File doesn't exists.
+            if (!$this->filesystem->fileExists($path)) {
                 $data = [
-                    'action' => $action,
-                    'listing' => $listing->toArray(),
+                    'content' => '',
+                    'path' => $path,
+                    'message' => 'File not found',
+                ];
+
+                return new JSendFailResponse($data, 404);
+            }
+
+            // Read file.
+            try {
+                $file = $this->filesystem->read($path);
+                $data = [
+                    'content' => base64_encode($file),
                     'path' => $path,
                 ];
 
                 return new JSendSuccessResponse($data);
-            } catch (FilesystemException $exception) {
+            } catch (FilesystemException | UnableToReadFile $exception) {
                 return new JSendErrorResponse($exception->getMessage());
             }
+        } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
+            return new JSendErrorResponse($exception->getMessage());
         }
-
-        // Get file contents.
-        if ('file' === $action) {
-            try {
-                // File doesn't exists.
-                if (!$this->filesystem->fileExists($path)) {
-                    $data = [
-                        'content' => '',
-                        'path' => $path,
-                        'message' => 'File not found',
-                    ];
-
-                    return new JSendFailResponse($data, 404);
-                }
-
-                // Read file.
-                try {
-                    $file = $this->filesystem->read($path);
-                    $data = [
-                        'action' => $action,
-                        'content' => $file,
-                        'path' => $path,
-                    ];
-
-                    return new JSendSuccessResponse($data);
-                } catch (FilesystemException | UnableToReadFile $exception) {
-                    return new JSendErrorResponse($exception->getMessage());
-                }
-            } catch (FilesystemException | UnableToRetrieveMetadata $exception) {
-                return new JSendErrorResponse($exception->getMessage());
-            }
-        }
-
-        // Action not valid or not set.
-        $data = [
-            'action' => $action,
-            'content' => '',
-            'message' => 'Action must be define.',
-            'path' => $path,
-        ];
-
-        return new JSendFailResponse($data, 400);
     }
 
     /**

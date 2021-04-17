@@ -24,6 +24,26 @@ class ApiController extends AbstractController
     /**
      * @Route("/", name="root")
      *
+     * @api {get} /api/v1 Get API status
+     * @apiName GetStatus
+     * @apiVersion 0.0.1
+     * @apiGroup Core
+     *
+     * @apiSuccess {String} status Request status.
+     * @apiSuccess {Object[]} data Data object.
+     * @apiSuccess {String} data.message Message from API.
+     * @apiSuccess {String} data.api_version API version requested.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "status": "success",
+     *       "data": [
+     *         "message": "Hello",
+     *         "api_version": "v1",
+     *       ]
+     *     }
+     *
      * @param \Symfony\Component\HttpFoundation\Request $request
      *   Symfony Request object.
      *
