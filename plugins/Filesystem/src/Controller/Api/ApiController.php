@@ -344,6 +344,7 @@ class ApiController
                     $this->filesystem->write($path, $content);
                     $data = [
                         'path' => $path,
+                        'content' => \json_encode($_POST),
                     ];
 
                     return new JSendSuccessResponse($data, 201);

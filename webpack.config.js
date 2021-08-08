@@ -53,7 +53,9 @@ Encore
     })
 
     // Add Vue
-    .enableVueLoader()
+    .enableVueLoader(() => {}, { version: 3 })
+
+    .enableSourceMaps(!Encore.isProduction())
 
     // enables Sass/SCSS support
     .enableSassLoader()
@@ -62,8 +64,6 @@ Encore
     // requires WebpackEncoreBundle 1.4 or higher
     .enableIntegrityHashes(Encore.isProduction())
 
-    // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
 ;
 
 module.exports = Encore.getWebpackConfig();
